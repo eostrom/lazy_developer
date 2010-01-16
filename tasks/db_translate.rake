@@ -45,7 +45,7 @@ def write_file(filename, contents)
 end
 
 def habtm_fixtures(object)
-  path = RAILS_ROOT + "/production_data"
+  path = File.join(Rails.root, "production_data")
   
   hatbms = object.reflect_on_all_associations.collect{|i| i if i.macro == :has_and_belongs_to_many}.compact
   h = Hash.new
@@ -80,7 +80,7 @@ namespace :db do
   task :from_yaml => :environment do
     require 'active_record/fixtures'
     ActiveRecord::Base.establish_connection(RAILS_ENV.to_sym)
-    (ENV['FIXTURES'] ? ENV['FIXTURES'].split(/,/) : Dir.glob(File.join(RAILS_ROOT, 'production_data', '*.yml'))).each do |fixture_file|
+    (ENV['FIXTURES'] ? ENV['FIXTURES'].split(/,/) : Dir.glob(File.join(Rails.root, 'production_data', '*.yml'))).each do |fixture_file|
       puts "importing #{fixture_file}"
       Fixtures.create_fixtures('production_data', File.basename(fixture_file, '.*'))
     end
@@ -88,9 +88,9 @@ namespace :db do
  
   desc "Dump all data to the production_data folder"
   task :to_yaml => :environment do
-    path = RAILS_ROOT + "/production_data"
+    path = File.join(Rails.root, "/production_data")
     
-    models= Dir.glob("#{RAILS_ROOT}/app/models/*.rb").collect{|c| c.gsub("#{RAILS_ROOT}/app/models/", "").gsub(".rb", "").camelize}
+    models= Dir.glob(File.join(Rails.root, "/app/models/*.rb")).collect{|c| c.gsub(File.join(Rails.root, "app/models/"), "").gsub(".rb", "").camelize}
     FileUtils.mkdir_p path rescue nil
     models.each do |m|
       begin

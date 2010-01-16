@@ -1,6 +1,6 @@
 namespace :spec do
   require 'spec/rake/spectask' if defined? Spec::Rake::SpecTask
-  spec_prereq = File.exist?(File.join(RAILS_ROOT, 'config', 'database.yml')) ? "db:test:prepare" : :noop
+  spec_prereq = File.exist?(File.join(Rails.root, 'config', 'database.yml')) ? "db:test:prepare" : :noop
   
   
   [:models, :controllers, :views, :helpers, :lib].each do |sub|
@@ -9,7 +9,8 @@ namespace :spec do
 
       if defined? Spec::Rake::SpecTask
         Spec::Rake::SpecTask.new("rcov" => spec_prereq) do |t|
-          t.spec_opts = ['--options', "\"#{RAILS_ROOT}/spec/spec.opts\""]
+          opts_file = File.join(Rails.root, 'spec/spec.opts')
+          t.spec_opts = ['--options', "\"#{opts_file}\""]
           t.spec_files = FileList["spec/#{sub}/**/*_spec.rb"]
           t.rcov = true
           
